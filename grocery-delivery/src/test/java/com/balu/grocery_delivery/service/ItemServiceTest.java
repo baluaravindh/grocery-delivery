@@ -163,4 +163,80 @@ public class ItemServiceTest {
         // VERIFY
         verify(itemRepository, times(1)).findById(99L);
     }
+
+    // ==================== UPDATE ITEM TESTS ====================
+
+    @Test
+    @DisplayName("Should update item successfully")
+    void updateItem_Successfully() {
+        itemDTO = new ItemDTO();
+        item.setName("Aashirvaad Shudh Chakki Atta");
+        item.setDescription("100% pure whole wheat flour, perfect for soft rotis.");
+        item.setPrice(new BigDecimal("210.00"));
+        item.setStockQuantity(145);
+        item.setCategory("HOUSEHOLD");
+        item.setUnit("PACKET");
+        item.setImageUrl("https://aashirvaadshudhchakkiaata.com");
+
+        // ARRANGE
+        when(itemRepository.findById(1L)).thenReturn(Optional.of(item));
+        when(itemRepository.save(any(Item.class))).thenReturn(item);
+
+        // ACT
+        ItemDTO updated = itemService.updateItem(1L, itemDTO);
+
+        // ASSERT
+        assertThat(updated).isNotNull();
+
+        // VERIFY
+        verify(itemRepository, times(1)).findById(1L);
+        verify(itemRepository, times(1)).save(any(Item.class));
+    }
+
+    @Test
+    @DisplayName("Should throw exception when updating non-existent item")
+    void updateItem_NotFound() {
+
+        // ARRANGE
+        when(itemRepository.findById(99L)).thenReturn(Optional.empty());
+
+        // ACT & ASSERT
+        assertThatThrownBy(() -> itemService.updateItem(99L, itemDTO))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessageContaining("Item not found with id: 99");
+    }
+
+    // ==================== DELETE PRODUCT TESTS ====================
+
+    @Test
+    @DisplayName("Should delete item successfully")
+    void deleteItemById_Successfully() {
+
+        // ARRANGE
+        when(itemRepository.findById(1L)).thenReturn(Optional.of(item));
+        doNothing().when(itemRepository).delete(item);
+
+        // ACT
+        itemService.deleteItem(1L);
+
+        // VERIFY
+        verify(itemRepository, times(1)).findById(1L);
+        verify(itemRepository, times(1)).delete(item);
+    }
+
+    @Test
+    @DisplayName("Should throw exception when deleting non-existent item")
+    void deleteItemById_NotFound() {
+
+        // ARRANGE
+        when(itemRepository.findById(99L)).thenReturn(Optional.empty());
+
+        // ACT & ASSERT
+        assertThatThrownBy(() -> itemService.deleteItem(99L))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessageContaining("Item not found with id: 99");
+
+        // VERIFY
+        verify(itemRepository, never()).delete(any(Item.class));
+    }
 }
