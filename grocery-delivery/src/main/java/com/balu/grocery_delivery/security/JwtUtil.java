@@ -17,7 +17,7 @@ public class JwtUtil {
     private String secret;
 
     @Value("${jwt.expiration}")
-    private String expiration;
+    private Long expiration;
 
     // Generate token for a user
     public String generateToken(String email, String role) {
