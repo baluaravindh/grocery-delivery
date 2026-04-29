@@ -53,7 +53,7 @@ public class CartService {
                     newCart.setCustomer(customer);
                     return cartRepository.save(newCart);
                 });
-
+        
         cartItemRepository.findByCartIdAndItemId(cart.getId(), dto.getItemId())
                 .ifPresentOrElse(existingItem -> {
                             existingItem.setQuantity(existingItem.getQuantity() + dto.getQuantity());
